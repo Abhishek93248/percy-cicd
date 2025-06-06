@@ -181,6 +181,7 @@ async function createPercySnapshotConfig (pdfDocsRunInfoMap) {
       ''
     )} => [1,${snapshotPagesArr}]`
   )
+
   for (let index = 0; index < snapshotPagesArr.length; index++) {
     const item = snapshotPagesArr[index]
     const nextIndex = item
@@ -197,21 +198,14 @@ async function createPercySnapshotConfig (pdfDocsRunInfoMap) {
 
     additionalSnapshotsForEachPage.push({
       suffix: ` | Page ${item}`,
-      waitForSelector: percyWaitForSelectorCss
+      waitForFunction: 'document.querySelector("div#viewer > div.page[data-loaded]") !== null'
     })
 
-    if (
-      pdfDocsRunInfoMap.includePages.length === 0 &&
-      pdfDocsRunInfoMap.excludePages.length === 0
-    ) {
-      additionalSnapshotsForEachPage.forEach(object => {
-        object.execute = percyExecuteScriptReferenceObj
-      })
-    } else {
-      additionalSnapshotsForEachPage.forEach(object => {
-        object.execute = percyDynExecuteScriptBeforeSnapshot
-      })
-    }
+    additionalSnapshotsForEachPage.forEach(object => {
+      object.execute = pdfDocsRunInfoMap.includePages.length === 0 && pdfDocsRunInfoMap.excludePages.length === 0
+        ? '*restore-page-state'
+        : percyDynExecuteScriptBeforeSnapshot
+    })
 
     if (pdfDocsRunInfoMap.percyConfigs?.waitForTimeout !== undefined) {
       additionalSnapshotsForEachPage.forEach(object => {
@@ -229,7 +223,7 @@ async function createPercySnapshotConfig (pdfDocsRunInfoMap) {
       {
         name: pdfDocsRunInfoMap.pdfFileName,
         url: `${pdfViewerUrlPath}/${pdfDocsRunInfoMap.projectFolder}/${pdfDocsRunInfoMap.finalWorkingDir}/${pdfDocsRunInfoMap.pdfFileName}`,
-        waitForSelector: percyWaitForSelectorCss,
+        waitForFunction: 'document.querySelector("div#viewer > div.page[data-loaded]") !== null',
         waitForTimeout: pdfDocsRunInfoMap.percyConfigs?.waitForTimeout,
         additionalSnapshots: additionalSnapshotsForEachPage
       }
@@ -238,7 +232,6 @@ async function createPercySnapshotConfig (pdfDocsRunInfoMap) {
 
   return snapshotConfigObj
 }
-
 async function cleanseYmlFile (ymlContent) {
   ymlContent = await utils.replaceContentInFile(
     ymlContent,
