@@ -21,6 +21,9 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - run: npm install
+      - name: 📥 Download PDF.js dist zip
+        run: |
+          curl -L -o pdfjs-3.4.120-dist.zip https://github.com/mozilla/pdf.js/releases/download/v3.4.120/pdfjs-3.4.120-dist.zip
       - name: Run test
         id: test
         continue-on-error: false
