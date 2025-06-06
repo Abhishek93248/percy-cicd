@@ -1,4 +1,4 @@
-\name: Percy PDF Visual Regression
+name: Percy PDF Visual Regression
 
 on:
   workflow_dispatch:  # Manual trigger from GitHub Actions tab
