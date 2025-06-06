@@ -1,0 +1,27 @@
+name: Percy PDF Visual Regression
+
+on:
+  workflow_dispatch:  # Enables manual trigger from GitHub UI
+
+jobs:
+  percy-pdf-test:
+    runs-on: ubuntu-latest
+
+    env:
+      PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
+
+    steps:
+      - name: ⬇️ Checkout repository
+        uses: actions/checkout@v3
+
+      - name: 🟢 Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: 📦 Install dependencies
+        run: npm install
+
+      - name: 🧪 Run Percy PDF Comparison
+        run: |
+          npm test -- configs/getting-started-scenarios/01_pdf-docs-run-info-baseline.yml
