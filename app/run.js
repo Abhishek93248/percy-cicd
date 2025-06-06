@@ -58,7 +58,6 @@ async function setup () {
     true
   )
   // recreate any existing auto generated folders
-  await new Promise(resolve => setTimeout(resolve, 2000));
   await utils.recreateFolder(pdfjsServerProjectsDir, true)
   await utils.recreateFolder(percyAutoGenConfigFolder, true)
 
@@ -181,7 +180,6 @@ async function createPercySnapshotConfig (pdfDocsRunInfoMap) {
       ''
     )} => [1,${snapshotPagesArr}]`
   )
-
   for (let index = 0; index < snapshotPagesArr.length; index++) {
     const item = snapshotPagesArr[index]
     const nextIndex = item
@@ -198,14 +196,21 @@ async function createPercySnapshotConfig (pdfDocsRunInfoMap) {
 
     additionalSnapshotsForEachPage.push({
       suffix: ` | Page ${item}`,
-      waitForFunction: 'document.querySelector("div#viewer > div.page[data-loaded]") !== null'
+      waitForSelector: percyWaitForSelectorCss
     })
 
-    additionalSnapshotsForEachPage.forEach(object => {
-      object.execute = pdfDocsRunInfoMap.includePages.length === 0 && pdfDocsRunInfoMap.excludePages.length === 0
-        ? '*restore-page-state'
-        : percyDynExecuteScriptBeforeSnapshot
-    })
+    if (
+      pdfDocsRunInfoMap.includePages.length === 0 &&
+      pdfDocsRunInfoMap.excludePages.length === 0
+    ) {
+      additionalSnapshotsForEachPage.forEach(object => {
+        object.execute = percyExecuteScriptReferenceObj
+      })
+    } else {
+      additionalSnapshotsForEachPage.forEach(object => {
+        object.execute = percyDynExecuteScriptBeforeSnapshot
+      })
+    }
 
     if (pdfDocsRunInfoMap.percyConfigs?.waitForTimeout !== undefined) {
       additionalSnapshotsForEachPage.forEach(object => {
@@ -223,7 +228,7 @@ async function createPercySnapshotConfig (pdfDocsRunInfoMap) {
       {
         name: pdfDocsRunInfoMap.pdfFileName,
         url: `${pdfViewerUrlPath}/${pdfDocsRunInfoMap.projectFolder}/${pdfDocsRunInfoMap.finalWorkingDir}/${pdfDocsRunInfoMap.pdfFileName}`,
-        waitForFunction: 'document.querySelector("div#viewer > div.page[data-loaded]") !== null',
+        waitForSelector: percyWaitForSelectorCss,
         waitForTimeout: pdfDocsRunInfoMap.percyConfigs?.waitForTimeout,
         additionalSnapshots: additionalSnapshotsForEachPage
       }
@@ -232,6 +237,7 @@ async function createPercySnapshotConfig (pdfDocsRunInfoMap) {
 
   return snapshotConfigObj
 }
+
 async function cleanseYmlFile (ymlContent) {
   ymlContent = await utils.replaceContentInFile(
     ymlContent,
