@@ -5,7 +5,7 @@
     "main": "app/run.js",
     "scripts": {
         "stop-server": "npx forever stopall",
-        "pretest": "(ver && npx extract-zip %cd%/pdfjs-3.4.120-dist.zip || extract-zip ./pdfjs-3.4.120-dist.zip)",
+        "pretest": "npx extract-zip ./pdfjs-3.4.120-dist.zip",
         "test": "node app/run.js",
         "posttest": "npm run stop-server && exit 0"
     },

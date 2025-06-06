@@ -1,7 +1,7 @@
 name: Percy PDF Visual Regression
 
 on:
-  workflow_dispatch:  # Enables manual trigger from GitHub UI
+  workflow_dispatch:  # Manual trigger from GitHub Actions tab
 
 jobs:
   percy-pdf-test:
@@ -19,9 +19,12 @@ jobs:
         with:
           node-version: '18'
 
+      - name: 📥 Download PDF.js distribution zip
+        run: |
+          curl -L -o pdfjs-3.4.120-dist.zip https://github.com/mozilla/pdf.js/releases/download/v3.4.120/pdfjs-3.4.120-dist.zip
+
       - name: 📦 Install dependencies
         run: npm install
 
       - name: 🧪 Run Percy PDF Comparison
-        run: |
-          npm test -- configs/getting-started-scenarios/01_pdf-docs-run-info-baseline.yml
+        run: npm test -- configs/getting-started-scenarios/01_pdf-docs-run-info-baseline.yml
