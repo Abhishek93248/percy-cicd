@@ -29,8 +29,5 @@ jobs:
       - name: 📂 Extract PDF.js dist
         run: npx extract-zip ./pdfjs-3.4.120-dist.zip
 
-      - name: 🐛 Debug - Check PDF.js Viewer Files
-        run: ls -la pdfjs-3.4.120-dist/web
-
       - name: 🧪 Run Percy PDF Comparison
         run: npm test -- configs/getting-started-scenarios/01_pdf-docs-run-info-baseline.yml
