@@ -58,6 +58,7 @@ async function setup () {
     true
   )
   // recreate any existing auto generated folders
+  await new Promise(resolve => setTimeout(resolve, 2000));
   await utils.recreateFolder(pdfjsServerProjectsDir, true)
   await utils.recreateFolder(percyAutoGenConfigFolder, true)
 
