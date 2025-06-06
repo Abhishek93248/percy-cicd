@@ -1,7 +1,7 @@
 name: Percy PDF Visual Regression
 
 on:
-  workflow_dispatch:  # Manual trigger from GitHub Actions tab
+  workflow_dispatch:
 
 jobs:
   percy-pdf-test:
@@ -29,14 +29,11 @@ jobs:
           echo "Waiting 5 seconds after extraction..."
           sleep 5
 
-      - name: 🐛 Check if viewer.html is reachable
-        run: |
-          nohup npx http-server pdfjs-3.4.120-dist -p 8080 -s > /dev/null 2>&1 &
-          sleep 3
-          curl --fail http://localhost:8080/web/viewer.html || echo "viewer.html not reachable"
-
       - name: 📦 Install dependencies
         run: npm install
 
-      - name: 🧪 Run Percy PDF Comparison
-        run: npm test -- configs/getting-started-scenarios/01_pdf-docs-run-info-baseline.yml
+      - name: 🧪 Run Percy PDF Comparison (with built-in HTTP server)
+        run: |
+          echo "Waiting 5 seconds before running test..."
+          sleep 5
+          npm test -- configs/getting-started-scenarios/01_pdf-docs-run-info-baseline.yml
